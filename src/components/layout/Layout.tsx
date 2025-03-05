@@ -14,7 +14,7 @@ export const Layout = () => {
     toast({
       title: "Nurse Called",
       description: "A nurse has been notified and will be with you shortly.",
-      variant: "success",
+      variant: "default",
     });
     
     // Reset after 30 seconds

@@ -99,7 +99,7 @@ const Tasks = () => {
       toast({
         title: task.completed ? "Task marked as pending" : "Task completed",
         description: task.title,
-        variant: task.completed ? "default" : "success",
+        variant: task.completed ? "default" : "default",
       });
     }
   };
@@ -133,7 +133,7 @@ const Tasks = () => {
     toast({
       title: "Task added",
       description: taskToAdd.title,
-      variant: "success",
+      variant: "default",
     });
   };
 

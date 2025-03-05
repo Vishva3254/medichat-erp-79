@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { FadeIn, SlideIn, StaggerChildren, StaggerItem } from '@/components/ui/Transitions';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,41 @@ import { toast } from '@/components/ui/use-toast';
 import { Calendar, Clock, Edit3, FileText, Mic, MicOff, Pill, Plus, Printer, Send, Trash2, User } from 'lucide-react';
 import { Patient } from '@/components/patients/PatientCard';
 
-// Sample data
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+      isFinal: boolean;
+      length: number;
+    };
+    length: number;
+  };
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: new () => SpeechRecognition;
+    webkitSpeechRecognition?: new () => SpeechRecognition;
+  }
+}
+
 const patients: Patient[] = [
   {
     id: "p1",
@@ -143,14 +176,13 @@ const Prescriptions = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingFor, setRecordingFor] = useState<'notes' | 'instructions' | null>(null);
   
-  // Speech recognition setup
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const [transcript, setTranscript] = useState('');
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
+    if (typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition)) {
+      const SpeechRecognitionConstructor = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognitionConstructor();
       recognitionRef.current.continuous = true;
       recognitionRef.current.interimResults = true;
       
@@ -294,10 +326,9 @@ const Prescriptions = () => {
     toast({
       title: "Prescription Saved",
       description: `Prescription saved for ${prescriptionToAdd.patientName}`,
-      variant: "success",
+      variant: "default",
     });
     
-    // Reset form
     setNewPrescription({
       patientId: '',
       patientName: '',
@@ -342,15 +373,13 @@ const Prescriptions = () => {
     toast({
       title: "Prescription Sent",
       description: "Prescription has been sent to the pharmacy",
-      variant: "success",
+      variant: "default",
     });
   };
 
   const filteredPrescriptions = prescriptions.filter(prescription => {
-    // Filter by status
     if (filter !== 'all' && prescription.status !== filter) return false;
     
-    // Filter by search query
     if (searchQuery && !prescription.patientName.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     
     return true;
