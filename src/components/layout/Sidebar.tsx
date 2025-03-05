@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -51,14 +50,16 @@ export const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile menu button */}
-      <button 
-        onClick={toggleSidebar} 
-        className="fixed top-4 left-4 z-50 p-2 rounded-md bg-background shadow-md border border-border lg:hidden"
-        aria-label={isOpen ? "Close menu" : "Open menu"}
-      >
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      {/* Mobile menu button - only show when sidebar is closed */}
+      {!isOpen && (
+        <button 
+          onClick={toggleSidebar} 
+          className="fixed top-4 left-4 z-50 p-2 rounded-md bg-background shadow-md border border-border lg:hidden"
+          aria-label="Open menu"
+        >
+          <Menu size={20} />
+        </button>
+      )}
 
       {/* Overlay for mobile */}
       {isMobile && isOpen && (
