@@ -10,6 +10,10 @@ import Patients from "./pages/Patients";
 import Appointments from "./pages/Appointments";
 import Records from "./pages/Records";
 import Chat from "./pages/Chat";
+import Analytics from "./pages/Analytics";
+import Tasks from "./pages/Tasks";
+import Prescriptions from "./pages/Prescriptions";
+import Medicines from "./pages/Medicines";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +31,10 @@ const App = () => (
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/records" element={<Records />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/prescriptions" element={<Prescriptions />} />
+            <Route path="/medicines" element={<Medicines />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

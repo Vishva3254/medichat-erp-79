@@ -11,7 +11,11 @@ import {
   Users, 
   X,
   BarChart3,
-  ClipboardList
+  ClipboardList,
+  Pill,
+  Bell,
+  Stethoscope,
+  Prescription
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -28,11 +32,13 @@ const mainItems: SidebarItem[] = [
   { title: 'Appointments', icon: CalendarDays, path: '/appointments' },
   { title: 'Records', icon: FileText, path: '/records' },
   { title: 'Analytics', icon: BarChart3, path: '/analytics' },
+  { title: 'Medicines', icon: Pill, path: '/medicines' },
 ];
 
 const otherItems: SidebarItem[] = [
   { title: 'Chat Assistant', icon: MessageSquare, path: '/chat' },
   { title: 'Tasks', icon: ClipboardList, path: '/tasks' },
+  { title: 'Prescriptions', icon: Prescription, path: '/prescriptions' },
   { title: 'Settings', icon: Settings, path: '/settings' },
 ];
 
@@ -118,13 +124,23 @@ export const Sidebar = () => {
           </nav>
         </div>
 
-        <div className="p-4 border-t border-sidebar-border flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-            <span className="text-lg font-medium">DR</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">Dr. Samantha Carter</p>
-            <p className="text-xs text-muted-foreground truncate">Cardiologist</p>
+        <div className="p-4 border-t border-sidebar-border space-y-3">
+          <button 
+            className="w-full flex items-center gap-2 p-2 rounded-md bg-success text-white hover:bg-success/90 transition-colors"
+            aria-label="Call a nurse"
+          >
+            <Bell size={18} />
+            <span className="font-medium">Call Nurse</span>
+          </button>
+
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+              <span className="text-lg font-medium">DR</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">Dr. Samantha Carter</p>
+              <p className="text-xs text-muted-foreground truncate">Cardiologist</p>
+            </div>
           </div>
         </div>
       </aside>
