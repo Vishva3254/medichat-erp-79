@@ -15,7 +15,7 @@ import {
   Pill,
   Bell,
   Stethoscope,
-  FileMedical
+  FileBox
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -38,7 +38,7 @@ const mainItems: SidebarItem[] = [
 const otherItems: SidebarItem[] = [
   { title: 'Chat Assistant', icon: MessageSquare, path: '/chat' },
   { title: 'Tasks', icon: ClipboardList, path: '/tasks' },
-  { title: 'Prescriptions', icon: FileMedical, path: '/prescriptions' },
+  { title: 'Prescriptions', icon: FileBox, path: '/prescriptions' },
   { title: 'Settings', icon: Settings, path: '/settings' },
 ];
 
