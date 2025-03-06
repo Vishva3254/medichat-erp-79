@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
-import { Calendar, Clock, Edit3, FileText, Mic, MicOff, Pill, Plus, Printer, Send, Trash2, User } from 'lucide-react';
+import { Calendar, Clock, Download, Edit3, FileText, Mic, MicOff, Pill, Plus, Printer, Send, Trash2, User, Phone, Weight, Activity } from 'lucide-react';
 import { Patient } from '@/components/patients/PatientCard';
 
 interface SpeechRecognitionEvent extends Event {
@@ -98,6 +98,9 @@ interface Prescription {
   id: string;
   patientId: string;
   patientName: string;
+  patientAge?: number;
+  patientWeight?: string;
+  patientPhone?: string;
   date: string;
   medicines: Array<{
     id: string;
@@ -115,6 +118,9 @@ const samplePrescriptions: Prescription[] = [
     id: 'rx1',
     patientId: 'p1',
     patientName: 'John Smith',
+    patientAge: 45,
+    patientWeight: '75 kg',
+    patientPhone: "(555) 123-4567",
     date: '2023-06-15',
     medicines: [
       {
@@ -139,6 +145,9 @@ const samplePrescriptions: Prescription[] = [
     id: 'rx2',
     patientId: 'p2',
     patientName: 'Emily Johnson',
+    patientAge: 32,
+    patientWeight: '60 kg',
+    patientPhone: "(555) 234-5678",
     date: '2023-06-14',
     medicines: [
       {
@@ -345,7 +354,10 @@ const Prescriptions = () => {
       setNewPrescription(prev => ({
         ...prev,
         patientId: patient.id,
-        patientName: patient.name
+        patientName: patient.name,
+        patientAge: patient.age,
+        patientPhone: patient.phone,
+        patientWeight: ''
       }));
     }
   };
@@ -375,6 +387,33 @@ const Prescriptions = () => {
       description: "Prescription has been sent to the pharmacy",
       variant: "default",
     });
+  };
+
+  const handleDownloadPrescription = (prescriptionId: string) => {
+    toast({
+      title: "Prescription Downloaded",
+      description: "Prescription has been downloaded as PDF",
+      variant: "default",
+    });
+  };
+
+  const handleWhatsAppSend = (prescriptionId: string, phoneNumber: string) => {
+    const formattedNumber = phoneNumber.replace(/[^\d]/g, '');
+    if (formattedNumber) {
+      window.open(`https://wa.me/${formattedNumber}?text=Your prescription is ready.`, '_blank');
+      
+      toast({
+        title: "WhatsApp Message",
+        description: "Opening WhatsApp to send message",
+        variant: "default",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Valid phone number required",
+        variant: "destructive",
+      });
+    }
   };
 
   const filteredPrescriptions = prescriptions.filter(prescription => {
@@ -451,20 +490,16 @@ const Prescriptions = () => {
           ) : (
             <SlideIn className="space-y-4">
               {filteredPrescriptions.map((prescription) => (
-                <Card key={prescription.id}>
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle>{prescription.patientName}</CardTitle>
-                        <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar size={14} />
-                            {new Date(prescription.date).toLocaleDateString()}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Pill size={14} />
-                            {prescription.medicines.length} medications
-                          </div>
+                <Card key={prescription.id} className="overflow-hidden">
+                  <div className="bg-primary/10 p-4 border-b">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-primary/20 p-2 rounded-full">
+                          <FileText className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-lg">HealthCare Clinic</h3>
+                          <p className="text-sm text-muted-foreground">123 Medical Avenue, Suite 100</p>
                         </div>
                       </div>
                       <div className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -472,63 +507,136 @@ const Prescriptions = () => {
                           ? 'bg-muted text-muted-foreground' 
                           : prescription.status === 'sent'
                             ? 'bg-primary/20 text-primary'
-                            : 'bg-success-light text-success'
+                            : 'bg-green-100 text-green-800'
                       }`}>
                         {prescription.status.charAt(0).toUpperCase() + prescription.status.slice(1)}
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
+                  </div>
+                  
+                  <CardContent className="pt-4">
                     <div className="space-y-4">
-                      <div className="rounded-md border overflow-hidden">
-                        <table className="min-w-full divide-y divide-border">
-                          <thead className="bg-muted/50">
-                            <tr>
-                              <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Medication</th>
-                              <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Dosage</th>
-                              <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Instructions</th>
-                              <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Duration</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-border">
-                            {prescription.medicines.map((medicine, index) => (
-                              <tr key={index}>
-                                <td className="px-4 py-2 text-sm">{medicine.name}</td>
-                                <td className="px-4 py-2 text-sm">{medicine.dosage}</td>
-                                <td className="px-4 py-2 text-sm">{medicine.instructions}</td>
-                                <td className="px-4 py-2 text-sm">{medicine.duration}</td>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <User size={16} className="text-primary" />
+                            <span className="font-medium">Patient:</span> {prescription.patientName}
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <Calendar size={16} className="text-primary" />
+                            <span className="font-medium">Date:</span> {new Date(prescription.date).toLocaleDateString()}
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Activity size={16} className="text-primary" />
+                            <span className="font-medium">Age:</span> {prescription.patientAge || 'N/A'} years
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <Weight size={16} className="text-primary" />
+                            <span className="font-medium">Weight:</span> {prescription.patientWeight || 'N/A'}
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <Phone size={16} className="text-primary" />
+                            <span className="font-medium">Phone:</span> {prescription.patientPhone || 'N/A'}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <h4 className="text-sm font-medium mb-2 px-2 py-1 bg-muted inline-block rounded">Medications</h4>
+                        <div className="rounded-md border overflow-hidden">
+                          <table className="min-w-full divide-y divide-border">
+                            <thead className="bg-muted/50">
+                              <tr>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Medication</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Dosage</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Instructions</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Duration</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className="divide-y divide-border">
+                              {prescription.medicines.map((medicine, index) => (
+                                <tr key={index}>
+                                  <td className="px-4 py-2 text-sm">{medicine.name}</td>
+                                  <td className="px-4 py-2 text-sm">{medicine.dosage}</td>
+                                  <td className="px-4 py-2 text-sm">{medicine.instructions}</td>
+                                  <td className="px-4 py-2 text-sm">{medicine.duration}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                       
                       {prescription.notes && (
                         <div>
-                          <h4 className="text-sm font-medium mb-1">Notes</h4>
-                          <p className="text-sm text-muted-foreground">{prescription.notes}</p>
+                          <h4 className="text-sm font-medium mb-1 px-2 py-1 bg-muted inline-block rounded">Notes</h4>
+                          <p className="text-sm text-muted-foreground p-2 border rounded-md">{prescription.notes}</p>
                         </div>
                       )}
-                      
-                      <div className="flex justify-end gap-2">
-                        {prescription.status === 'draft' && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleSendToPharmacy(prescription.id)}
-                            className="gap-1"
-                          >
-                            <Send size={14} />
-                            Send to Pharmacy
-                          </Button>
-                        )}
-                        <Button variant="outline" size="sm" className="gap-1">
-                          <Printer size={14} />
-                          Print
-                        </Button>
-                        <Button variant="outline" size="sm" className="gap-1">
-                          <Edit3 size={14} />
-                          Edit
-                        </Button>
+
+                      <div className="border-t pt-4 mt-4">
+                        <div className="text-center mb-4">
+                          <p className="text-primary font-medium italic">Get Well Soon!</p>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          <div className="text-sm">
+                            <p className="font-medium">Dr. Samantha Carter</p>
+                            <p className="text-muted-foreground">Cardiologist</p>
+                            <p className="text-muted-foreground">License #: MD12345</p>
+                          </div>
+                          
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1"
+                              onClick={() => handleDownloadPrescription(prescription.id)}
+                            >
+                              <Download size={14} />
+                              Download
+                            </Button>
+                            
+                            {prescription.patientPhone && (
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="gap-1"
+                                onClick={() => handleWhatsAppSend(prescription.id, prescription.patientPhone || '')}
+                              >
+                                <Send size={14} />
+                                Send
+                              </Button>
+                            )}
+                            
+                            {prescription.status === 'draft' && (
+                              <Button
+                                size="sm"
+                                onClick={() => handleSendToPharmacy(prescription.id)}
+                                className="gap-1"
+                              >
+                                <Send size={14} />
+                                Send to Pharmacy
+                              </Button>
+                            )}
+                            
+                            <Button variant="outline" size="sm" className="gap-1">
+                              <Printer size={14} />
+                              Print
+                            </Button>
+                            
+                            <Button variant="outline" size="sm" className="gap-1">
+                              <Edit3 size={14} />
+                              Edit
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -546,7 +654,7 @@ const Prescriptions = () => {
                   <CardTitle>New Prescription</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <Label htmlFor="patient">Patient</Label>
                       <Select 
@@ -565,6 +673,17 @@ const Prescriptions = () => {
                         </SelectContent>
                       </Select>
                     </div>
+                    
+                    <div>
+                      <Label htmlFor="patientWeight">Patient Weight</Label>
+                      <Input
+                        id="patientWeight"
+                        placeholder="e.g., 70 kg"
+                        value={newPrescription.patientWeight || ''}
+                        onChange={(e) => setNewPrescription({...newPrescription, patientWeight: e.target.value})}
+                      />
+                    </div>
+                    
                     <div>
                       <Label htmlFor="date">Date</Label>
                       <Input
@@ -729,10 +848,18 @@ const Prescriptions = () => {
             
             <div className="lg:col-span-4">
               <Card className="sticky top-20">
-                <CardHeader>
-                  <CardTitle>Prescription Preview</CardTitle>
+                <CardHeader className="bg-primary/10 pb-4 border-b">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-primary/20 p-2 rounded-full">
+                      <FileText className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle>HealthCare Clinic</CardTitle>
+                      <p className="text-sm text-muted-foreground">123 Medical Avenue, Suite 100</p>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-4">
                   {!newPrescription.patientId ? (
                     <div className="text-center text-muted-foreground">
                       <FileText className="mx-auto h-12 w-12 opacity-20 mb-2" />
@@ -740,17 +867,35 @@ const Prescriptions = () => {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <div className="pb-4 border-b">
-                        <h3 className="font-medium">{newPrescription.patientName}</h3>
-                        <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar size={14} />
-                            {new Date(newPrescription.date).toLocaleDateString()}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <h3 className="font-medium">{newPrescription.patientName}</h3>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            <div className="flex items-center gap-1">
+                              <Calendar size={14} />
+                              {new Date(newPrescription.date).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm">
+                            <div className="flex items-center gap-1">
+                              <Activity size={14} /> 
+                              <span>Age: {newPrescription.patientAge || 'N/A'}</span>
+                            </div>
+                            <div className="flex items-center gap-1 mt-1">
+                              <Weight size={14} />
+                              <span>Weight: {newPrescription.patientWeight || 'N/A'}</span>
+                            </div>
+                            <div className="flex items-center gap-1 mt-1">
+                              <Phone size={14} />
+                              <span>Phone: {newPrescription.patientPhone || 'N/A'}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
                       
-                      <div>
+                      <div className="border-t pt-3 mt-3">
                         <h4 className="text-sm font-medium mb-2">Medications</h4>
                         {newPrescription.medicines.length === 0 ? (
                           <p className="text-sm text-muted-foreground">No medications added</p>
@@ -775,6 +920,9 @@ const Prescriptions = () => {
                       )}
                       
                       <div className="pt-4 border-t mt-4">
+                        <div className="text-center mb-3">
+                          <p className="text-primary font-medium italic">Get Well Soon!</p>
+                        </div>
                         <div className="text-sm">
                           <p className="font-medium">Dr. Samantha Carter</p>
                           <p className="text-muted-foreground">Cardiologist</p>
