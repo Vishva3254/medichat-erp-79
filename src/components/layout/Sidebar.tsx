@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -25,6 +26,11 @@ type SidebarItem = {
   path: string;
 };
 
+type SidebarProps = {
+  onCallNurse: () => void;
+  nurseRequested: boolean;
+};
+
 const mainItems: SidebarItem[] = [
   { title: 'Dashboard', icon: Home, path: '/' },
   { title: 'Patients', icon: Users, path: '/patients' },
@@ -41,7 +47,7 @@ const otherItems: SidebarItem[] = [
   { title: 'Settings', icon: Settings, path: '/settings' },
 ];
 
-export const Sidebar = () => {
+export const Sidebar = ({ onCallNurse, nurseRequested }: SidebarProps) => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(!isMobile);
@@ -127,11 +133,13 @@ export const Sidebar = () => {
 
         <div className="p-4 border-t border-sidebar-border space-y-3">
           <button 
-            className="w-full flex items-center gap-2 p-2 rounded-md bg-success text-white hover:bg-success/90 transition-colors"
+            onClick={onCallNurse}
+            disabled={nurseRequested}
+            className="w-full flex items-center gap-2 p-2 rounded-md bg-success text-white hover:bg-success/90 transition-colors disabled:opacity-50"
             aria-label="Call a nurse"
           >
             <Bell size={18} />
-            <span className="font-medium">Call Nurse</span>
+            <span className="font-medium">{nurseRequested ? "Nurse Called" : "Call Nurse"}</span>
           </button>
 
           <div className="flex items-center space-x-3">
