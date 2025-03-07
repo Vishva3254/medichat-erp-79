@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -29,6 +28,7 @@ type SidebarItem = {
 type SidebarProps = {
   onCallNurse: () => void;
   nurseRequested: boolean;
+  timeLeft?: number | null;
 };
 
 const mainItems: SidebarItem[] = [
@@ -47,7 +47,7 @@ const otherItems: SidebarItem[] = [
   { title: 'Settings', icon: Settings, path: '/settings' },
 ];
 
-export const Sidebar = ({ onCallNurse, nurseRequested }: SidebarProps) => {
+export const Sidebar = ({ onCallNurse, nurseRequested, timeLeft }: SidebarProps) => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(!isMobile);
@@ -56,7 +56,6 @@ export const Sidebar = ({ onCallNurse, nurseRequested }: SidebarProps) => {
 
   return (
     <>
-      {/* Mobile menu button - only show when sidebar is closed */}
       {!isOpen && (
         <button 
           onClick={toggleSidebar} 
@@ -67,7 +66,6 @@ export const Sidebar = ({ onCallNurse, nurseRequested }: SidebarProps) => {
         </button>
       )}
 
-      {/* Overlay for mobile */}
       {isMobile && isOpen && (
         <div 
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
@@ -75,7 +73,6 @@ export const Sidebar = ({ onCallNurse, nurseRequested }: SidebarProps) => {
         />
       )}
 
-      {/* Sidebar */}
       <aside 
         className={cn(
           "fixed inset-y-0 left-0 z-40 flex flex-col w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-300 ease-in-out",
@@ -135,11 +132,31 @@ export const Sidebar = ({ onCallNurse, nurseRequested }: SidebarProps) => {
           <button 
             onClick={onCallNurse}
             disabled={nurseRequested}
-            className="w-full flex items-center gap-2 p-2 rounded-md bg-success text-white hover:bg-success/90 transition-colors disabled:opacity-50"
+            className={cn(
+              "w-full flex items-center gap-2 p-2 rounded-md transition-all duration-300 relative overflow-hidden",
+              nurseRequested 
+                ? "bg-success/20 text-success-foreground border border-success/30"
+                : "bg-success text-white hover:bg-success/90"
+            )}
             aria-label="Call a nurse"
           >
-            <Bell size={18} />
-            <span className="font-medium">{nurseRequested ? "Nurse Called" : "Call Nurse"}</span>
+            {nurseRequested ? (
+              <>
+                <div className="absolute inset-0 bg-success/10 animate-pulse"></div>
+                <Bell size={18} className="animate-pulse" />
+                <div className="flex flex-col items-start">
+                  <span className="font-medium text-sm">Nurse Called</span>
+                  {timeLeft !== null && (
+                    <span className="text-xs">Arriving in {timeLeft}s</span>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <Bell size={18} />
+                <span className="font-medium">Call Nurse</span>
+              </>
+            )}
           </button>
 
           <div className="flex items-center space-x-3">
