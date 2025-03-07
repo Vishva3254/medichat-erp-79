@@ -4,6 +4,8 @@ import { SendHorizontal, Mic, Bot, Paperclip, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { FadeIn, SlideIn } from '../ui/Transitions';
+import { useTheme } from '@/providers/ThemeProvider';
+import { cn } from '@/lib/utils';
 
 type Message = {
   id: string;
@@ -13,6 +15,8 @@ type Message = {
 };
 
 export const ChatInterface = () => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -86,7 +90,12 @@ export const ChatInterface = () => {
   };
 
   return (
-    <div className="glass-card h-[70vh] md:h-[80vh] flex flex-col overflow-hidden">
+    <div className={cn(
+      "h-[70vh] md:h-[80vh] flex flex-col overflow-hidden",
+      isDark 
+        ? "bg-sidebar-background border border-sidebar-border rounded-xl shadow-md" 
+        : "glass-card"
+    )}>
       <div className="p-4 border-b border-border flex items-center space-x-3">
         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
           <Bot className="h-4 w-4 text-primary-foreground" />
@@ -97,18 +106,21 @@ export const ChatInterface = () => {
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] md:max-w-[70%] rounded-lg p-3 ${
+              className={cn(
+                "max-w-[80%] md:max-w-[70%] rounded-lg p-3",
                 message.sender === 'user'
-                  ? 'bg-primary text-primary-foreground rounded-tr-none'
-                  : 'bg-secondary text-secondary-foreground rounded-tl-none'
-              }`}
+                  ? "bg-primary text-primary-foreground rounded-tr-none"
+                  : isDark 
+                    ? "bg-secondary/80 text-secondary-foreground rounded-tl-none" 
+                    : "bg-secondary text-secondary-foreground rounded-tl-none"
+              )}
             >
               <p className="text-sm">{message.text}</p>
               <p className="text-xs opacity-70 mt-1 text-right">
@@ -120,7 +132,12 @@ export const ChatInterface = () => {
         
         {isLoading && (
           <SlideIn direction="up" className="flex justify-start">
-            <div className="max-w-[80%] md:max-w-[70%] rounded-lg p-3 bg-secondary text-secondary-foreground rounded-tl-none">
+            <div className={cn(
+              "max-w-[80%] md:max-w-[70%] rounded-lg p-3 rounded-tl-none",
+              isDark 
+                ? "bg-secondary/80 text-secondary-foreground" 
+                : "bg-secondary text-secondary-foreground"
+            )}>
               <p className="text-sm loading-dots">Typing</p>
             </div>
           </SlideIn>
@@ -136,7 +153,10 @@ export const ChatInterface = () => {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
-            className="pr-24 resize-none h-[80px]"
+            className={cn(
+              "pr-24 resize-none h-[80px]", 
+              isDark && "bg-sidebar-accent border-sidebar-border focus-visible:ring-sidebar-ring"
+            )}
           />
           <div className="absolute right-3 bottom-3 flex items-center space-x-2">
             <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full">
@@ -162,7 +182,12 @@ export const ChatInterface = () => {
               <button
                 key={suggestion}
                 onClick={() => setInputValue(suggestion)}
-                className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-full text-xs hover:bg-secondary/80 transition-colors flex items-center"
+                className={cn(
+                  "px-3 py-1.5 rounded-full text-xs transition-colors flex items-center",
+                  isDark 
+                    ? "bg-sidebar-accent text-sidebar-foreground hover:bg-sidebar-accent/80" 
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                )}
               >
                 {suggestion}
                 <XCircle className="h-3 w-3 ml-1 opacity-60" />
