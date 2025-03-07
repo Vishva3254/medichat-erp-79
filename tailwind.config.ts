@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -77,16 +76,25 @@ export default {
 					light: '#E8F5E9',
 					DEFAULT: '#4CAF50',
 					dark: '#2E7D32',
+					foreground: '#1B5E20',
 				},
 				warning: {
 					light: '#FFF8E1',
 					DEFAULT: '#FFC107',
 					dark: '#FFA000',
+					foreground: '#F57C00',
 				},
 				danger: {
 					light: '#FFEBEE',
 					DEFAULT: '#F44336',
 					dark: '#C62828',
+					foreground: '#B71C1C',
+				},
+				info: {
+					light: '#E1F5FE',
+					DEFAULT: '#03A9F4',
+					dark: '#0277BD',
+					foreground: '#01579B',
 				}
 			},
 			borderRadius: {
@@ -95,7 +103,13 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			fontFamily: {
-				sans: ['Inter', 'sans-serif'],
+				sans: ['Inter', 'system-ui', 'sans-serif'],
+				poppins: ['Poppins', 'sans-serif'],
+			},
+			boxShadow: {
+				'subtle': '0 2px 10px rgba(0, 0, 0, 0.05)',
+				'card': '0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1)',
+				'elevation': '0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05)',
 			},
 			keyframes: {
 				'accordion-down': {

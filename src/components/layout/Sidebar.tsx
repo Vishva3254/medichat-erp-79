@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -14,10 +15,12 @@ import {
   Pill,
   Bell,
   Stethoscope,
-  FileBox
+  FileBox,
+  ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Button } from '@/components/ui/button';
 
 type SidebarItem = {
   title: string;
@@ -59,7 +62,7 @@ export const Sidebar = ({ onCallNurse, nurseRequested, timeLeft }: SidebarProps)
       {!isOpen && (
         <button 
           onClick={toggleSidebar} 
-          className="fixed top-4 left-4 z-50 p-2 rounded-md bg-background shadow-md border border-border lg:hidden"
+          className="fixed top-4 left-4 z-50 p-2 rounded-md bg-background/80 shadow-md border border-border backdrop-blur-sm lg:hidden"
           aria-label="Open menu"
         >
           <Menu size={20} />
@@ -75,7 +78,7 @@ export const Sidebar = ({ onCallNurse, nurseRequested, timeLeft }: SidebarProps)
 
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex flex-col w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-300 ease-in-out",
+          "fixed inset-y-0 left-0 z-40 flex flex-col w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-300 ease-in-out shadow-md",
           isOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0 lg:static"
         )}
@@ -85,20 +88,20 @@ export const Sidebar = ({ onCallNurse, nurseRequested, timeLeft }: SidebarProps)
             <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold">MD</span>
             </div>
-            <span className="text-xl font-semibold">MediChat</span>
+            <span className="text-xl font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">MediChat</span>
           </Link>
           {isMobile && (
             <button 
               onClick={toggleSidebar} 
-              className="p-1 rounded-md hover:bg-sidebar-accent"
+              className="p-1.5 rounded-md hover:bg-sidebar-accent/80 text-muted-foreground"
               aria-label="Close menu"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           )}
         </div>
 
-        <div className="flex-1 py-4 overflow-y-auto">
+        <div className="flex-1 py-4 overflow-y-auto scrollbar-thin">
           <nav className="px-3 space-y-1">
             <div className="mb-2">
               <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
@@ -113,7 +116,7 @@ export const Sidebar = ({ onCallNurse, nurseRequested, timeLeft }: SidebarProps)
               ))}
             </div>
             
-            <div className="mt-6 pt-4 border-t border-sidebar-border">
+            <div className="mt-6 pt-4 border-t border-sidebar-border/70">
               <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
                 Other
               </p>
@@ -128,15 +131,15 @@ export const Sidebar = ({ onCallNurse, nurseRequested, timeLeft }: SidebarProps)
           </nav>
         </div>
 
-        <div className="p-4 border-t border-sidebar-border space-y-3">
+        <div className="p-4 border-t border-sidebar-border space-y-4">
           <button 
             onClick={onCallNurse}
             disabled={nurseRequested}
             className={cn(
-              "w-full flex items-center gap-2 p-2 rounded-md transition-all duration-300 relative overflow-hidden",
+              "w-full flex items-center gap-2 p-3 rounded-lg transition-all duration-300 relative overflow-hidden shadow-sm",
               nurseRequested 
-                ? "bg-success/20 text-success-foreground border border-success/30"
-                : "bg-success text-white hover:bg-success/90"
+                ? "bg-success/20 text-success-foreground border border-success/40"
+                : "bg-gradient-to-r from-success to-success/90 text-white hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
             )}
             aria-label="Call a nurse"
           >
@@ -155,15 +158,16 @@ export const Sidebar = ({ onCallNurse, nurseRequested, timeLeft }: SidebarProps)
               <>
                 <Bell size={18} />
                 <span className="font-medium">Call Nurse</span>
+                <ChevronRight size={16} className="ml-auto" />
               </>
             )}
           </button>
 
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-              <span className="text-lg font-medium">DR</span>
+          <div className="flex items-center p-3 rounded-lg bg-sidebar-accent/30 border border-sidebar-border/50">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+              <span className="text-lg font-medium text-primary">DR</span>
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 ml-3">
               <p className="text-sm font-medium truncate">Dr. Samantha Carter</p>
               <p className="text-xs text-muted-foreground truncate">Cardiologist</p>
             </div>
@@ -185,11 +189,16 @@ const SidebarLink = ({
     <Link
       to={item.path}
       className={cn(
-        "sidebar-item",
-        isActive ? "sidebar-item-active" : "sidebar-item-inactive"
+        "sidebar-item group",
+        isActive 
+          ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" 
+          : "text-sidebar-foreground hover:bg-sidebar-accent/70"
       )}
     >
-      <item.icon size={18} />
+      <item.icon size={18} className={cn(
+        "transition-transform group-hover:scale-110",
+        isActive ? "" : "text-muted-foreground"
+      )} />
       <span>{item.title}</span>
     </Link>
   );

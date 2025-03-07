@@ -64,19 +64,21 @@ export const Layout = () => {
       />
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 relative">
+        <main className="flex-1 relative overflow-x-hidden">
           <Outlet />
           
           {nurseRequested && (
-            <SlideIn direction="up" className="fixed bottom-4 right-4 left-4 md:left-auto md:w-72 z-50">
-              <div className="bg-success/10 text-success-foreground border border-success/30 rounded-lg p-3 shadow-lg">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-success animate-pulse"></div>
-                  <p className="text-sm font-medium">Nurse has been called</p>
+            <SlideIn direction="up" className="fixed bottom-4 right-4 left-4 md:left-auto md:w-80 z-50">
+              <div className="bg-success/10 text-success-foreground border border-success/30 rounded-lg p-4 shadow-lg backdrop-blur-sm">
+                <div className="flex items-center gap-3">
+                  <div className="h-3 w-3 rounded-full bg-success animate-pulse"></div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Nurse assistance requested</p>
+                    {timeLeft !== null && (
+                      <p className="text-xs mt-0.5">Estimated arrival in {timeLeft} seconds</p>
+                    )}
+                  </div>
                 </div>
-                {timeLeft !== null && (
-                  <p className="text-xs mt-1">Estimated arrival: {timeLeft} seconds</p>
-                )}
               </div>
             </SlideIn>
           )}
