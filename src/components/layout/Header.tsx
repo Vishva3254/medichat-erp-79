@@ -3,16 +3,13 @@ import { Bell, Search, Sun, Moon } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useTheme } from '@/providers/ThemeProvider';
 
 export const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [darkMode, setDarkMode] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === 'dark';
   const isMobile = useIsMobile();
-  
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    // This is just UI for now, actual dark mode implementation would require context
-  };
   
   return (
     <header className="sticky top-0 z-30 w-full border-b border-border bg-background/95 backdrop-blur-sm">
@@ -34,10 +31,11 @@ export const Header = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={toggleDarkMode} 
-            className="rounded-full"
+            onClick={toggleTheme} 
+            className="rounded-full transition-colors hover:bg-muted"
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </Button>
           
           <button className="relative p-2 rounded-full hover:bg-muted transition-colors">
