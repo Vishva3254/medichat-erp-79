@@ -1,8 +1,11 @@
 
 import { FadeIn } from '@/components/ui/Transitions';
 import { PatientList } from '@/components/patients/PatientList';
+import { useTheme } from '@/providers/ThemeProvider';
 
 const Patients = () => {
+  const { theme } = useTheme();
+  
   return (
     <div className="container mx-auto py-6 px-4 md:px-6">
       <FadeIn>

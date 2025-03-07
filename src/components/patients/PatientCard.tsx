@@ -2,6 +2,8 @@
 import { MoreVertical, Phone, Mail, MapPin } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { StaggerItem } from '../ui/Transitions';
+import { cn } from '@/lib/utils';
+import { useTheme } from '@/providers/ThemeProvider';
 
 export type Patient = {
   id: string;
@@ -21,12 +23,22 @@ interface PatientCardProps {
 }
 
 export const PatientCard = ({ patient }: PatientCardProps) => {
+  const { theme } = useTheme();
+  
   return (
     <StaggerItem>
-      <div className="glass-card p-5 card-hover">
+      <div className={cn(
+        "p-5 card-hover rounded-lg border shadow-sm transition-all", 
+        theme === 'dark' 
+          ? "bg-card text-card-foreground border-border/40" 
+          : "glass-card"
+      )}>
         <div className="flex justify-between items-start">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+            <div className={cn(
+              "w-12 h-12 rounded-full flex items-center justify-center overflow-hidden",
+              theme === 'dark' ? "bg-muted" : "bg-gray-200"
+            )}>
               {patient.avatar ? (
                 <img src={patient.avatar} alt={patient.name} className="w-full h-full object-cover" />
               ) : (
@@ -78,11 +90,16 @@ export const PatientCard = ({ patient }: PatientCardProps) => {
             <p className="text-xs text-muted-foreground">Last visit</p>
             <p className="text-sm">{patient.lastVisit}</p>
           </div>
-          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+          <div className={cn(
+            "px-2 py-1 rounded-full text-xs font-medium",
             patient.status === 'active' 
-              ? 'bg-success-light text-success' 
-              : 'bg-muted text-muted-foreground'
-          }`}>
+              ? theme === 'dark' 
+                ? 'bg-success-dark/30 text-success-light' 
+                : 'bg-success-light text-success'
+              : theme === 'dark'  
+                ? 'bg-muted/60 text-muted-foreground' 
+                : 'bg-muted text-muted-foreground'
+          )}>
             {patient.status.charAt(0).toUpperCase() + patient.status.slice(1)}
           </div>
         </div>

@@ -12,6 +12,8 @@ import {
 } from '@/components/ui/table';
 import { FadeIn, SlideIn } from '@/components/ui/Transitions';
 import { Download, File, FileCog, FileText, Filter, Search } from 'lucide-react';
+import { useTheme } from '@/providers/ThemeProvider';
+import { cn } from '@/lib/utils';
 
 type Record = {
   id: string;
@@ -93,6 +95,7 @@ const medicalRecords: Record[] = [
 const Records = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'complete' | 'pending' | 'draft'>('all');
+  const { theme } = useTheme();
 
   const filteredRecords = medicalRecords.filter((record) => {
     // Filter by search query
@@ -115,13 +118,13 @@ const Records = () => {
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'complete':
-        return 'badge-green';
+        return theme === 'dark' ? 'badge-green dark:bg-green-900/30 dark:text-green-300' : 'badge-green';
       case 'pending':
-        return 'badge-yellow';
+        return theme === 'dark' ? 'badge-yellow dark:bg-yellow-900/30 dark:text-yellow-300' : 'badge-yellow';
       case 'draft':
-        return 'badge-blue';
+        return theme === 'dark' ? 'badge-blue dark:bg-blue-900/30 dark:text-blue-300' : 'badge-blue';
       default:
-        return 'badge-blue';
+        return theme === 'dark' ? 'badge-blue dark:bg-blue-900/30 dark:text-blue-300' : 'badge-blue';
     }
   };
 
@@ -190,8 +193,11 @@ const Records = () => {
         </div>
       </SlideIn>
 
-      <SlideIn delay={0.2} className="glass-card">
-        <div className="rounded-lg overflow-hidden">
+      <SlideIn delay={0.2}>
+        <div className={cn(
+          "rounded-lg overflow-hidden border", 
+          theme === 'dark' ? "bg-card border-border" : "glass-card"
+        )}>
           <Table>
             <TableHeader>
               <TableRow>
